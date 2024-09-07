@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from datetime import datetime
 import os
+import base64
 
 
 
@@ -78,8 +79,10 @@ def main():
     ##Bucket Name
     target_bucket='youtubeanalysisdata'
 
-    ##Suman google pi key
-    api_key="AIzaSyDB5njE1N6yoDo8v8NdYFrG7dsfqtp3B4E"
+    ##Suman google api key
+    api_key ="QUl6YVN5REI1bmpFMU42eW9Ebzh2OE5kWUZyRzdkc2ZxdHAzQjRF"
+    api_key = base64.b64decode(api_key)
+    
 
     ##Youtube channel id
     channel_ids =["UC4p_I9eiRewn2KoU-nawrDg", #Strait Times
