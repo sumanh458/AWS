@@ -80,8 +80,6 @@ def main():
     target_bucket='youtubeanalysisdata'
 
     ##Suman google api key
-    api_key ="QUl6YVN5REI1bmpFMU42eW9Ebzh2OE5kWUZyRzdkc2ZxdHAzQjRF"
-    api_key = base64.b64decode(api_key)
     
 
     ##Youtube channel id
