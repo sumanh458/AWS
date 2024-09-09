@@ -114,7 +114,7 @@ def main():
     if os.getlogin() in 'Suman Haldar':
         fullpath= os.path.join(os.path.dirname(__file__), 'channel_data/inserted_date='+current_date)
         os.makedirs(fullpath,exist_ok=True)
-        channel_data.to_csv(f"{fullpath}/{channel_data_file_name}", index=False)
+        channel_data.to_parquet(f"{fullpath}/{channel_data_file_name}", index=False)
     else:
         channel_data.to_csv('s3://'+target_bucket+'/'+channel_data_sub_folder, index=False)
 
