@@ -1,3 +1,7 @@
+## Code to pull the data from Youtube to S3 location (platform EC2s)
+
+# Import the modules required for the program
+#Import the googleapiclient for fetching data from Youtube  
 from googleapiclient.discovery import build 
 import pandas as pd 
 import seaborn as sns
@@ -10,7 +14,9 @@ import json
 
 
 
-##Function to get Channel Statistics
+'''Function to get Channel Statistics
+    Return a list containing Channel data information
+'''
 def get_channel_stats(youtube,channel_ids):
     all_data =[]
     request = youtube.channels().list(part="snippet,contentDetails,statistics",id=','.join(channel_ids))
@@ -25,7 +31,9 @@ def get_channel_stats(youtube,channel_ids):
         all_data.append(data)
     return all_data
 
-##Function to get get video ids
+'''Function to get get video ids
+    Return a list containing Video id details information for specific channel
+'''
 def get_video_ids (youtube,playlist_id):
     request =youtube.playlistItems().list(
         part='contentDetails',
@@ -53,7 +61,9 @@ def get_video_ids (youtube,playlist_id):
             next_page_token = response.get('nextPageToken')
     return video_ids
 
-##Function to get video details
+'''Function to get video details
+   Return a list containing Video details information
+'''
 def get_video_details(youtube,video_ids):
     all_video_stats =[]
     for i in range(0,len(video_ids),50):
@@ -74,6 +84,7 @@ def get_video_details(youtube,video_ids):
             all_video_stats.append(video_stats)
     return all_video_stats
 
+# Main function
 def main():
     ##Initializing Boto3 client to interact with s3
     current_date = str(datetime.today().strftime('%Y-%m-%d'))
@@ -81,7 +92,7 @@ def main():
     ##Bucket Name
     target_bucket='youtubeanalysisdata'
 
-    ##Suman google api key
+    ##Suman google api key in base 64 encode form
     api_key ="QUl6YVN5REI1bmpFMU42eW9Ebzh2OE5kWUZyRzdkc2ZxdHAzQjRF"
     api_key = base64.b64decode(api_key)
     
@@ -106,8 +117,8 @@ def main():
     channel_data['Views'] =pd.to_numeric(channel_data['Views'])
     channel_data['Videos'] =pd.to_numeric(channel_data['Videos'])
 
-    ##To add new column as inserted date for analysis
-    #channel_data['Inserted_date']= datetime.today().strftime('%Y-%m-%d')
+    ##Displaying Channel details
+    print("################# Channel Data information #################")
     print(channel_data)
 
     ##To store the channel data in s3 location with partitioned value(i.e fetched date)
@@ -120,20 +131,10 @@ def main():
     else:
         channel_data.to_csv('s3://'+target_bucket+'/'+channel_data_sub_folder, index=False)
 
-  
-
-    ## To plot thr bar graph for analysing the channel statistic
-    '''sns.set(rc={'figure.figsize':(10,8)})
-    ax =sns.barplot(x='Channel_name',y='Subscriber',data=channel_data)
-    plt.show()
-    ax =sns.barplot(x='Channel_name',y='Views',data=channel_data)
-    plt.show()
-    ax =sns.barplot(x='Channel_name',y='Videos',data=channel_data)
-    plt.show()'''
 
     ##To fetch the playlist_id for defined youtube channel
     for index, row in channel_data.iterrows():
-        print("============== Fetching result for "+row['Channel_name']+" channel ==============")
+        print("################# Fetching result for "+row['Channel_name']+" channel #################")
         playlist_id =row['Playlist_id']
     
         ##Function to get all video ids
@@ -150,10 +151,6 @@ def main():
         video_details['Favorite'] = pd.to_numeric(video_details['Favorite'])
         video_details['Comments'] = pd.to_numeric(video_details['Comments'])
 
-        ##To add new column ,inserted date for analysis
-        #video_details['Inserted_date']= datetime.today().strftime('%Y-%m-%d')
-        print(video_details)
-
         ##To store the video_details data in s3 location with partitioned value(i.e playlist_id and fetched date)
         video_details_file_name = 'Youtube_video_details_'+current_date+'.csv'
         video_details_sub_folder ='video_details/playlist_id='+str(playlist_id)+'/inserted_date='+current_date+'/'+video_details_file_name
@@ -163,7 +160,6 @@ def main():
             video_details.to_csv(f"{fullpath}/{video_details_file_name}", index=False)
         else:
             video_details.to_csv('s3://'+target_bucket+'/'+video_details_sub_folder, index=False)
-        
         
 
 if __name__=="__main__":
