@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import os
 import base64
+import boto3
+import json
 
 
 
@@ -161,37 +163,11 @@ def main():
             video_details.to_csv(f"{fullpath}/{video_details_file_name}", index=False)
         else:
             video_details.to_csv('s3://'+target_bucket+'/'+video_details_sub_folder, index=False)
-
-
-        '''
-        #Simple analysis
-        ##Top 10 videos
-        top_10_videos =video_details.sort_values(by='Views',ascending=False).head(10)
-        print(top_10_videos)
-
-        #bar plot 
-        ax1 =sns.barplot(x='Views',y='Title',data=top_10_videos)
-        plt.show()
-
-        #in Which month video is posted
-        video_details['Month'] = pd.to_datetime(video_details['Published_date']).dt.strftime('%b')
-        print('==============')
-        print(video_details)
-
-        #to calculate video posted in each month
-        videos_per_month =video_details.groupby('Month',as_index=False).size()
-        print(videos_per_month)
-
-        sort_order =['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-        videos_per_month.index = pd.CategoricalIndex(videos_per_month['Month'],categories = sort_order,ordered=True)
-        videos_per_month = videos_per_month.sort_index()
-        print(videos_per_month)'''
+        
+        
 
 if __name__=="__main__":
     main()
     
-
-
-
 
 
