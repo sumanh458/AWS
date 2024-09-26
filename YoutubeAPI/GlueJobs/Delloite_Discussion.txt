@@ -1,0 +1,78 @@
+Q--to rank emp on the basis of salary within a dept
+
+select
+empId,dense_rank() over(partition by dept order by salary desc) as rank
+from employee;
+
+
+employee whose salsry is getter than avg salary 
+
+select * from employee  e inner join (
+select
+dept,avg(salary) avgerageSalary
+from employee group by dept ) d on e.dept = d.dept and e.salary>d.avgerageSalary;
+
+
+
+employee = spark.read.csv('<path to employee csv>')
+employee.createOrReplaceTempView('employee')
+employeeSalary_Rank  =  spark.sql('select
+empId,dense_rank() over(partition by dept order by salary desc) as rank
+from employee')
+employeeSalary_Rank.show(10,False)
+
+#################################
+import spark.sql.function  import *
+
+window_custom =  over(partition by col('dept') order by col('salary') desc )
+employeeSalary_Rank = employee.withColumn('rank',dense_rank().window(window_custom))
+
+employeeSalary_Rank.show(10000,False)
+####################
+Question 2 
+
+deptAvg =employee.withColumn('avgerageSalaryDept',avg(col('salary')).groupBy(col('dept'))
+deptAvg = deptAvg.select(['dept','avgerageSalaryDept'])
+
+
+EmpSalaryGetter =employee.join(deptAvg ,'inner','employee.dept = deptAvg.dept and employee.salary >deptAvg.avgerageSalaryDept')
+
+EmpSalaryGetter =deptAvg.join(employee ,'inner','employee.dept = deptAvg.dept and employee.salary >deptAvg.avgerageSalaryDept')
+
+
+EmpSalaryGetter.show(10,False)
+
+
+Employee -10000
+dept --- 5
+
+
+let assume 
+
+20 Node 
+
+1 executor -4 node 
+1 Node -128 mb 
+
+
+20 Node 
+
+20 *16 = 320
+
+
+
+
+#####################
+
+
+Recieve----
+10000
+
+20 GB
+
+ege node 
+
+1
+
+####################
+
